@@ -1,5 +1,3 @@
-command:
-  description: 最终用户许可协议
 eula:
   defaultAccept: 同意
   eulaMessage: |-
