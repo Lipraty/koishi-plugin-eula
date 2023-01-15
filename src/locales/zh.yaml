@@ -1,0 +1,15 @@
+command:
+  description: 最终用户许可协议
+eula:
+  defaultAccept: 同意
+  eulaMessage: |-
+    <>
+      <message forward>
+        <message id="{0}">您使用了需要认可 {1} 后方可使用的服务，以下为具体内容：</message>
+        <message id="{0}">{2}</message>
+        <message id="{0}">如已仔细阅读并确认，请发送 “{3}” 或 “不同意”。</message>
+      </message>
+    </>
+  acceptedMessage: 您已同意 {0}，服务已生效。
+  rejectMessage: 您未同意 {0}，将不能为您提供条款限制的服务。\n 如果您需要使用，可发送 eula 命令来重新执行该流程。
+  timeout: 等待超时
