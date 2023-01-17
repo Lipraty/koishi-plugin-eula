@@ -1,8 +1,18 @@
-import { Argv, Context, Schema, Session } from 'koishi'
+import { Argv, Context, Schema, Service, Session } from 'koishi'
 import { } from '@koishijs/plugin-help'
 
-class Eula {
+declare module 'koishi' {
+  interface Context {
+    eula: Eula
+  }
+}
+
+class Eula extends Service {
+  public readonly filter = false
+  public readonly usage = Eula.usage
+
   constructor(ctx: Context, private config: Eula.Config) {
+    super(ctx, 'eula')
     ctx.i18n.define('zh', require('./locales/zh'))
 
     ctx.before('attach-user', (session, fields) => {
@@ -25,7 +35,16 @@ class Eula {
       } else {
         accept = this.config.accept[0] ?? session.text('eula.defaultAccept')
       }
-      session.send(session.text('eula.eulaMessage', [session.userId, this.config.alias, this.config.eula, accept]))
+      console.log(accept)
+      await session.send(`
+        <>
+          <message id="{0}">${session.text('eula.eulaMessage.title', [this.config.alias])}</message>
+          <message forward>
+            <message id="{0}">${this.config.eula}</message>
+            <message id="{0}">${session.text('eula.eulaMessage.confirm', [accept])}</message>
+          </message>
+        </>
+      `)
       const prompt = await session.prompt(this.config.waitTime * 1000)
       if (prompt) {
         if (prompt === accept) {
@@ -36,13 +55,17 @@ class Eula {
       } else return session.text('eula.timeout')
     }
   }
+
+  /**
+   * 验证该用户的 eula 认可情况
+   * @param userId 用户 id，即 `session.user.id`
+   */
+  verify(userId: number){
+
+  }
 }
 
 namespace Eula {
-  export const name = 'eula'
-
-  export const filter = false
-
   export const usage = `
 ## 注意事项
 
