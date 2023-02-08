@@ -10,21 +10,19 @@
 
 ## 开发扩展 eula 能力 (1.0+)
 
-> 这是一个在 1.x 版本才开始支持的特性，可以在 commits 中关注 1.0.0 版本 bump。
-
-首先需要添加 eula 依赖：
+首先需要添加 eula 开发模式依赖：
 
 ``` shell
 # yarn:
 
-yarn add koishi-plugin-eula
+yarn add koishi-plugin-eula -d
 
 # or use npm
 
-npm i koishi-plugin-eula
+npm i koishi-plugin-eula -d
 ```
 
-且可以在 `package.json` 中加入如下 koishi 字段来声明 eula 依赖：
+并且可以在 `package.json` 中加入如下 koishi 字段来声明 eula 依赖：
 
 ``` json
 //package.json
@@ -33,42 +31,50 @@ npm i koishi-plugin-eula
     "koishi": {
         ...,
         "service": {
-            "required": [
-                "eula"
-            ]
+            "required": [..., "eula"]
         },
         ...
     },
 ...
 ```
 
-然后，在您的插件中引入类型依赖以及添加 using 引用来让 koishi 正确的加载插件顺序：
+然后，在您的插件中引入类型依赖来获得类型提示
+
+以及添加 using 引用来让 koishi 正确的加载插件顺序：
 
 ``` TypeScript
 import {} from 'koishi-plugin-eula'
 
 export const using = ['eula', ...]
 ```
-最后，在您的插件中通过 `ctx.eula` 来获得 eula 状态：
+最后，在您的插件中通过 `before-eula` 事件来获得 eula 状态，并根据状态自行调整：
 
 ``` TypeScript
-function apply(ctx: Context, config: Config){
-    ctx.command()...
-        .action(({session}) => {
-        if(ctx.eula.verify(session.user.id)){
-            //more code...
-        }
-    })
-    ...
-}
+ctx.on('before-eula', (argv: Argv, eula: boolean) => {
+    //more core
+})
 ```
 
-经过如上方式便可在您的插件中单独使用 eula，或者基于 eula 的认证能力扩展出更多的玩法。
+经过如上方式便可在您的插件中使用 eula 流程，或者基于 eula 的认证能力扩展出更多的玩法。
 
-## Eula 服务
+## API
 
-通过 `ctx.eula` 来访问
+### 服务：eula
 
-- #### `eula.verify(userId: number): boolean`
+#### `ctx.eula.vertify()`
 
-    传入 `user.id` 来获得该用户是否同意过 eula
+> 一般情况下，更推荐使用 `eula` 事件来获得认证状态，这将得到完整 Session 支持
+
+验证该用户是否同意 `eula`
+
+- userId: `number` 用户 id，即 session.user.id
+
+### 扩展事件
+
+事件：`before-eula`
+
+命令触发 eula 流程**前**产生该事件
+
+事件：`eula`
+
+当用户确认 eula 后触发，可能会
