@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-eula",
   "description": "EULA(End-user licence agreement) for your koishi bot.",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "repository": "https://github.com/Lipraty/koishi-plugin-eula",
   "author": "Lipraty <i@lonay.me>",
   "main": "lib/index.js",
@@ -14,7 +14,7 @@
   "scripts": {},
   "koishi": {
     "description": {
-      "zh": "给 Koishi Bot 的使用添加一个《最终用户许可协议》"
+      "zh": "⚡给 Koishi Bot 的使用添加一个《最终用户许可协议》"
     },
     "service": {
       "required": [
@@ -25,7 +25,10 @@
   "keywords": [
     "chatbot",
     "koishi",
-    "plugin"
+    "plugin",
+    "eula",
+    "用户许可协议",
+    "群管"
   ],
   "peerDependencies": {
     "koishi": "^4.11.0"
