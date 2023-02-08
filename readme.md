@@ -47,10 +47,10 @@ import {} from 'koishi-plugin-eula'
 
 export const using = ['eula', ...]
 ```
-最后，在您的插件中通过 `before-eula` 事件来获得 eula 状态，并根据状态自行调整：
+最后，在您的插件中通过 `eula/before` 事件来获得 eula 状态，并根据状态自行调整：
 
 ``` TypeScript
-ctx.on('before-eula', (argv: Argv, eula: boolean) => {
+ctx.on('eula/update', (argv: Argv, eula: boolean) => {
     //more core
 })
 ```
@@ -71,10 +71,10 @@ ctx.on('before-eula', (argv: Argv, eula: boolean) => {
 
 ### 扩展事件
 
-事件：`before-eula`
+事件：`eula/before`
 
-命令触发 eula 流程**前**产生该事件
+命令触发 eula 流程**前**发生该事件
 
-事件：`eula`
+事件：`eula/update`
 
-当用户确认 eula 后触发，可能会
+当用户回复 eula 后触发，这将传入一个 eula boolean 来告知用户同意与否
