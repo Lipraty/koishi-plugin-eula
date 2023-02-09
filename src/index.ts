@@ -33,38 +33,11 @@ class Eula extends Service {
       const session = _.session as Session<'eula'>
       const authority = session.resolve(session.argv.command.config.authority)
       ctx.emit('eula/before', _)
-      if (!session.user.eula && authority >= 1) session.execute('eula --starteula')
+      if (!session.user.eula && authority >= 1) this.eula(_)
     })
 
     ctx.command('eula', '最终用户许可协议', { authority: 0, })
-      .userFields(['authority', 'eula'])
-      .option('starteula', '立即执行 eula 流程', { hidden: true })
-      .action(async ({ session, options }) => {
-        console.log(options)
-        if (options.starteula) {
-          let accept: string
-
-          if (this.config.accept.length > 1) accept = this.config.accept[Math.round(Math.random() * this.config.accept.length)]
-          else accept = this.config.accept[0] ?? session.text('eula.defaultAccept')
-
-          await session.send(`
-              <>
-                <message id="{0}">${session.text('eula.eulaMessage.title', [this.config.alias])}</message>
-                <message ${config.forwardMessgae ? 'forward' : ''}>
-                  <message id="{0}">${this.config.eula}</message>
-                  <message id="{0}">${session.text('eula.eulaMessage.confirm', [accept])}</message>
-                </message>
-              </>
-            `)
-          const prompt = await session.prompt(this.config.waitTime * 1000)
-          if (prompt) {
-            const accredita = prompt === accept
-            session.user.eula = !accredita
-            ctx.emit('eula/update', session, accredita)
-            return session.text(`${accredita ? 'eula.acceptedMessage' : 'eula.rejectMessage'}`, [this.config.alias])
-          } else return session.text('eula.timeout')
-        }
-      })
+      .action(this.eula)
 
     ctx.private().command('eulafix', 'eula Fixtool')
       .option('revise', '-r move old data', { authority: 5 })
@@ -82,6 +55,29 @@ class Eula extends Service {
         }
         if (options.master) session.user.eula = true
       })
+  }
+
+  private async eula(argv: Argv) {
+    const session = argv.session as Session<'eula'>
+    let accept: string
+    if (this.config.accept.length > 1) accept = this.config.accept[Math.round(Math.random() * this.config.accept.length)]
+    else accept = this.config.accept[0] ?? session.text('eula.defaultAccept')
+    await session.send(`
+              <>
+                <message id="{0}">${session.text('eula.eulaMessage.title', [this.config.alias])}</message>
+                <message ${this.config.forwardMessgae ? 'forward' : ''}>
+                  <message id="{0}">${this.config.eula}</message>
+                  <message id="{0}">${session.text('eula.eulaMessage.confirm', [accept])}</message>
+                </message>
+              </>
+            `)
+    const prompt = await session.prompt(this.config.waitTime * 1000)
+    if (prompt) {
+      const accredita = prompt === accept
+      session.user.eula = !accredita
+      this.ctx.emit('eula/update', session, accredita)
+      return session.text(`${accredita ? 'eula.acceptedMessage' : 'eula.rejectMessage'}`, [this.config.alias])
+    } else return session.text('eula.timeout')
   }
 
   /**
