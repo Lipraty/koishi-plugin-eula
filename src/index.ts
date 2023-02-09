@@ -9,7 +9,7 @@ declare module 'koishi' {
 
   interface Events {
     'eula/before'(argv: Argv): void
-    'eula/update'(eula: boolean): void
+    'eula/update'(session: Session, eula: boolean): void
   }
 }
 
@@ -60,8 +60,8 @@ class Eula extends Service {
           if (prompt) {
             const accredita = prompt === accept
             session.user.eula = !accredita
-            ctx.emit('eula/update', accredita)
-            return session.text(`${ accredita ? 'eula.acceptedMessage' : 'eula.rejectMessage'}`, [this.config.alias])
+            ctx.emit('eula/update', session, accredita)
+            return session.text(`${accredita ? 'eula.acceptedMessage' : 'eula.rejectMessage'}`, [this.config.alias])
           } else return session.text('eula.timeout')
         }
       })
