@@ -47,10 +47,10 @@ import {} from 'koishi-plugin-eula'
 
 export const using = ['eula', ...]
 ```
-最后，在您的插件中通过 `eula/before` 事件来获得 eula 状态，并根据状态自行调整：
+最后，在您的插件中通过 `eula/update` 事件来获得 eula 状态，并根据状态自行调整：
 
 ``` TypeScript
-ctx.on('eula/update', (argv: Argv, eula: boolean) => {
+ctx.on('eula/update', (session: Session, eula: boolean) => {
     //more core
 })
 ```
@@ -63,7 +63,7 @@ ctx.on('eula/update', (argv: Argv, eula: boolean) => {
 
 #### `ctx.eula.vertify()`
 
-> 一般情况下，更推荐使用 `eula` 事件来获得认证状态，这将得到完整 Session 支持
+> 一般情况下，更推荐使用 `eula/update` 事件来获得认证状态，这将得到完整 Session 支持
 
 验证该用户是否同意 `eula`
 
