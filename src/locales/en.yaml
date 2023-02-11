@@ -1,0 +1,12 @@
+eula:
+  defaultAccept: 'promise'
+  eulaMessage: 
+    title: 'You have used a service that requires a commitment of {0}, as follows:'
+    confirm: 'Please send "{0}" or "No" if you have read and confirmed it carefully.'
+  acceptedMessage: 'You have committed {0} and the service is live.'
+  rejectMessage: |-
+    <messasge>
+      <p>You have not committed to {0} and will not be able to provide you with the services restricted by the terms</p>
+      <p>Send the eula command to redo the process if you need to.</p>
+    </messasge>
+  timeout: 'timeout'
