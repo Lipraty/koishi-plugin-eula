@@ -29,11 +29,11 @@ class Eula extends Service {
       fields.add('eula')
     })
 
-    ctx.before('command/execute', (_) => {
+    ctx.before('command/execute', async (_) => {
       const session = _.session as Session<'eula'>
       const authority = session.resolve(session.argv.command.config.authority)
       ctx.emit('eula/before', _)
-      if (!session.user.eula && authority >= 1 && _.command.name !== 'eula') this.eula(_)
+      if (!session.user.eula && authority >= 1 && _.command.name !== 'eula') return await this.eula(_)
     })
 
     ctx.command('eula', '最终用户许可协议', { authority: 0, })
@@ -73,10 +73,10 @@ class Eula extends Service {
             `)
     const prompt = await session.prompt(this.config.waitTime * 1000)
     if (prompt) {
-      const accredita = prompt === accept
-      session.user.eula = accredita
-      this.ctx.emit('eula/update', session, accredita)
-      return session.text(`${accredita ? 'eula.acceptedMessage' : 'eula.rejectMessage'}`, [this.config.alias])
+      const accredit = prompt === accept
+      session.user.eula = accredit
+      this.ctx.emit('eula/update', session, accredit)
+      return session.text(`${accredit ? 'eula.acceptedMessage' : 'eula.rejectMessage'}`, [this.config.alias])
     } else return session.text('eula.timeout')
   }
 
