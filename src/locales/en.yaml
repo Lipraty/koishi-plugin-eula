@@ -1,12 +1,13 @@
 eula:
   defaultAccept: 'promise'
   eulaMessage: 
-    title: 'You have used a service that requires a commitment of {0}, as follows:'
-    confirm: 'Please send "{0}" or "No" if you have read and confirmed it carefully.'
-  acceptedMessage: 'You have committed {0} and the service is live.'
+    title: 'You have used a service via restricted by "{0}" and is as follows:'
+    text: 'I am lisence content and please change it!'
+    confirm: 'If you have read it and accpet it, please send "{0}" or send "Disagree" to reject the lisence terms.'
+  acceptedMessage: 'You accepted {0} and you can use the services'
   rejectMessage: |-
     <messasge>
-      <p>You have not committed to {0} and will not be able to provide you with the services restricted by the terms</p>
-      <p>Send the eula command to redo the process if you need to.</p>
+      <p>You have not accept the {0} and will be forbidden use the services via restricted by the lisence terms</p>
+      <p>Send `eula` command to redo the process if you need.</p>
     </messasge>
   timeout: 'timeout'
