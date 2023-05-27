@@ -28,13 +28,13 @@ npm i koishi-plugin-eula -d
 //package.json
 
 ...
-    "koishi": {
-        ...,
-        "service": {
-            "required": [..., "eula"]
-        },
-        ...
+  "koishi": {
+    ...,
+    "service": {
+      "required": [..., "eula"]
     },
+    ...
+  },
 ...
 ```
 
@@ -65,7 +65,7 @@ ctx.on('eula/update', (session: Session, eula: boolean) => {
 
 > 一般情况下，更推荐使用 `eula/update` 事件来获得认证状态，这将得到完整 Session 支持
 
-验证该用户是否同意 `eula`
+验证该用户是否同意过 `eula`
 
 - userId: `number` 用户 id，即 session.user.id
 
