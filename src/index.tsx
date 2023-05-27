@@ -1,4 +1,4 @@
-import { Argv, Computed, Context, Random, Schema, Service, Session } from 'koishi'
+import { Argv, Context, Random, Schema, Service, Session } from 'koishi'
 import { } from '@koishijs/plugin-help'
 import { } from '@koishijs/plugin-rate-limit'
 
@@ -39,7 +39,10 @@ class Eula extends Service {
         && authority > 0
         && session.user.authority <= configs.replyAuthority
         && _.command.name !== 'eula')
-        return await this.eula(_)
+        if (configs.enable
+          || (!configs.model && !configs.commands.includes(_.command.name))
+          || (configs.model && configs.commands.includes(_.command.name)))
+          return await this.eula(_)
     })
 
     ctx.command('eula', '最终用户许可协议', { authority: 0, })
@@ -89,10 +92,8 @@ namespace Eula {
 
 对于部署者行为及所产生的任何纠纷， Koishi 及 koishi-plugin-eula 概不负责。
 
-协议内容文本可以在 <a href="/locales">本地化</a> 中修改，因此你可以根据不同语言给予不同的协议文本。
+协议内容文本可以在 <a href="/locales/eula/eulaMessage">本地化 - eula.eulaMessage</a> 中修改，因此你可以根据不同语言给予不同的协议文本。
 `
-
-  type Model = 'all' | 'blacklist' | 'whitelist'
 
   export interface Config {
     waitTime: number
@@ -100,8 +101,9 @@ namespace Eula {
     replyAuthority: number
     alias: string
     accept: string[]
-    model: Model
-    commandPick: string[]
+    enable: boolean
+    model?: boolean
+    commands?: string[]
   }
 
   export const Config: Schema<Config> = Schema.intersect([
@@ -112,27 +114,25 @@ namespace Eula {
     }).description('基本设置'),
     Schema.object({
       alias: Schema.string().default('EULA').description('《最终用户许可协议》别名，或其他自拟协议名称'),
-      accept: Schema.array(String).default(['同意']).description('认可协议关键字，如果有多个，则随机某一个作为认可关键字')
+      accept: Schema.array(String).description('认可协议关键字，如果有多个，则随机某一个作为认可关键字')
     }).description('协议设置'),
     Schema.intersect([
       Schema.object({
-        model: Schema.union([
-          Schema.const<'all'>('all').description('全部'),
-          Schema.const<'blacklist'>('blacklist').description('黑名单模式'),
-          Schema.const<'whitelist'>('whitelist').description('白名单模式')
-        ]).default('all').required().description('协议生效环境')
+        enable: Schema.boolean().default(true).description('限制所有的命令')
       }),
       Schema.union([
         Schema.object({
-          model: Schema.const('blacklist').required(),
-          commandPick: Schema.array(String).description('要排除的指令列表')
+          enable: Schema.const(false).required(),
+          model: Schema.union([
+            Schema.const(true).description('白名单'),
+            Schema.const(false).description('黑名单'),
+          ]).description('限制命令的模式'),
+          commands: Schema.array(String).description('指令列表')
         }),
-        Schema.object({
-          model: Schema.const('whitelist').required(),
-          commandPick: Schema.array(String).description('要限制的指令列表')
-        }),
-      ])]).description('限制设置')
-  ])
+        Schema.object({})
+      ])
+    ]).description('指令限制')
+  ]) as Schema<Config>
 }
 
 export default Eula
