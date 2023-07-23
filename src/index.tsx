@@ -1,4 +1,4 @@
-import { Argv, Context, Random, Schema, Service, Session } from 'koishi'
+import { Argv, Context, Random, Schema, Service, Session, Logger, h } from 'koishi'
 import { } from '@koishijs/plugin-help'
 import { } from '@koishijs/plugin-rate-limit'
 
@@ -16,11 +16,13 @@ declare module 'koishi' {
 class Eula extends Service {
   public readonly filter = false
   public readonly usage = Eula.usage
+  private log: Logger
 
   constructor(ctx: Context, private configs: Eula.Config) {
     super(ctx, 'eula', true)
     ctx.i18n.define('zh', require('./locales/zh'))
     ctx.i18n.define('en', require('./locales/en'))
+    this.log = ctx.logger('eula')
 
     ctx.model.extend('user', {
       eula: { type: 'boolean', initial: false }
@@ -66,8 +68,12 @@ class Eula extends Service {
       </>
     )
     const prompt = await session.prompt(this.configs.waitTime * 1000)
+    this.log.info(`[platfrom: ${session.platform}]user ${session.userId} reply to (${prompt}) eula`)
     if (prompt) {
-      const accredit = prompt === accept
+      const promptEle = h.parse(prompt)
+      if(promptEle[0].type === 'at' && promptEle[0].attrs!.id === session.bot.selfId)
+        promptEle.shift() // remove `at` element
+      const accredit = (promptEle[0].attrs.content as string).replace(/^\//g, '').trim() === accept
       session.user.eula = accredit
       this.ctx.emit('eula/update', session, accredit)
       return session.text(`${accredit ? 'eula.acceptedMessage' : 'eula.rejectMessage'}`, [this.configs.alias])
