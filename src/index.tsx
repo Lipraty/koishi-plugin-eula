@@ -1,4 +1,4 @@
-import { Argv, Context, Random, Schema, Service, Session, Logger, h } from 'koishi'
+import { Argv, Context, Random, Schema, Service, Session, Logger, h, Dict } from 'koishi'
 import { } from '@koishijs/plugin-help'
 import { } from '@koishijs/plugin-rate-limit'
 
@@ -52,7 +52,8 @@ class Eula extends Service {
   }
 
   private async eula(argv: Argv) {
-    const session = argv.session as Session<'eula'>
+    const session = argv.session as Session<'eula' | 'locales'>
+    const userLocale = (session.user as any).locale || session.user.locales[0] || 'zh'
     const accept: string = Random.pick(this.configs.accept) ?? session.text('eula.defaultAccept')
     await session.send(
       <>
@@ -61,7 +62,7 @@ class Eula extends Service {
         </message>
         <message forward={this.configs.forwardMessgae}>
           <message id="{0}">
-            <i18n path="eula.eulaMessage.text"></i18n>
+            {this.configs.content[userLocale] ?? this.configs.content['zh']}
           </message>
           <message id="{0}"><i18n path="eula.eulaMessage.confirm">{[accept]}</i18n></message>
         </message>
@@ -106,6 +107,7 @@ namespace Eula {
     forwardMessgae: boolean
     replyAuthority: number
     alias: string
+    content: Dict<string, string>
     accept: string[]
     enable: boolean
     model?: boolean
@@ -120,6 +122,9 @@ namespace Eula {
     }).description('基本设置'),
     Schema.object({
       alias: Schema.string().default('EULA').description('《最终用户许可协议》别名，或其他自拟协议名称'),
+      content: Schema.dict(Schema.string().role('textarea', { rows: [2, 4] })).default({
+        'zh': '协议内容',
+      }).description('协议内容的多语言设置'),
       accept: Schema.array(String).description('认可协议关键字，如果有多个，则随机某一个作为认可关键字')
     }).description('协议设置'),
     Schema.intersect([

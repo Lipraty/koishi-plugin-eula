@@ -2,7 +2,6 @@ eula:
   defaultAccept: 'promise'
   eulaMessage: 
     title: 'You have used a service via restricted by "{0}" and is as follows:'
-    text: 'I am lisence content and please change it!'
     confirm: 'If you have read it and accpet it, please send "{0}" or send "Disagree" to reject the lisence terms.'
   acceptedMessage: 'You accepted {0} and you can use the services'
   rejectMessage: |-
