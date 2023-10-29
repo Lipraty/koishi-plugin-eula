@@ -16,6 +16,7 @@ declare module 'koishi' {
 class Eula extends Service {
   public readonly filter = false
   public readonly usage = Eula.usage
+  public readonly inject = Eula.inject
   private log: Logger
 
   constructor(ctx: Context, private configs: Eula.Config) {
@@ -101,6 +102,7 @@ namespace Eula {
 
 协议内容文本可以在 <a href="/locales/eula/eulaMessage">本地化 - eula.eulaMessage</a> 中修改，因此你可以根据不同语言给予不同的协议文本。
 `
+  export const inject = ['database']
 
   export interface Config {
     waitTime: number

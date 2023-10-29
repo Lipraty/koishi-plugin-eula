@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-eula",
   "description": "EULA(End-user licence agreement) for your koishi bot.",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "repository": "https://github.com/Lipraty/koishi-plugin-eula",
   "author": "Lipraty <i@lonay.me>",
   "main": "lib/index.js",
@@ -33,6 +33,6 @@
     "群管"
   ],
   "peerDependencies": {
-    "koishi": "^4.12.0"
+    "koishi": "^4.15.3"
   }
 }
